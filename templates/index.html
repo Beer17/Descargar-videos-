@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloader Web - Descargador de Videos HD & MP3</title>
+    <meta name="description" content="Descarga videos y música en alta calidad de YouTube, TikTok, Instagram, Twitter/X y cientos de sitios más gratis.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>MediaFetch <span>PRO</span></h1>
+                    <p>Descarga videos y música de YouTube, TikTok, Instagram y +1000 sitios</p>
+                </div>
+            </div>
+            <button id="btnOpenFolderHeader" class="btn-secondary" title="Abrir carpeta donde se guardan las descargas">
+                <i class="fa-regular fa-folder-open"></i> Abrir Carpeta
+            </button>
+        </header>
+
+        <!-- Main Input Card -->
+        <main class="main-content">
+            <section class="card input-card">
+                <div class="input-header">
+                    <i class="fa-solid fa-link"></i>
+                    <h2>Pega el enlace de tu video o audio</h2>
+                </div>
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-globe input-icon"></i>
+                        <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=... o TikTok, Instagram, X..." autocomplete="off">
+                        <button type="button" id="btnPaste" class="btn-icon" title="Pegar desde el portapapeles">
+                            <i class="fa-regular fa-clipboard"></i>
+                        </button>
+                        <button type="button" id="btnClear" class="btn-icon hidden" title="Limpiar entrada">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <button type="button" id="btnFetchInfo" class="btn-primary">
+                        <span class="btn-text"><i class="fa-solid fa-magnifying-glass"></i> Analizar Enlace</span>
+                        <div class="spinner hidden"></div>
+                    </button>
+                </div>
+
+                <!-- Platform Badges -->
+                <div class="supported-platforms">
+                    <span class="platform-tag"><i class="fa-brands fa-youtube" style="color: #ff0000;"></i> YouTube</span>
+                    <span class="platform-tag"><i class="fa-brands fa-tiktok" style="color: #00f2fe;"></i> TikTok</span>
+                    <span class="platform-tag"><i class="fa-brands fa-instagram" style="color: #e1306c;"></i> Instagram</span>
+                    <span class="platform-tag"><i class="fa-brands fa-x-twitter" style="color: #fff;"></i> X / Twitter</span>
+                    <span class="platform-tag"><i class="fa-brands fa-facebook" style="color: #1877f2;"></i> Facebook</span>
+                    <span class="platform-tag"><i class="fa-brands fa-twitch" style="color: #9146ff;"></i> Twitch</span>
+                    <span class="platform-tag"><i class="fa-brands fa-vimeo-v" style="color: #1ab7ea;"></i> Vimeo</span>
+                    <span class="platform-tag"><i class="fa-brands fa-soundcloud" style="color: #ff5500;"></i> SoundCloud</span>
+                </div>
+            </section>
+
+            <!-- Video Preview Card (Initially hidden) -->
+            <section id="previewCard" class="card preview-card hidden">
+                <div class="preview-layout">
+                    <div class="thumbnail-wrapper">
+                        <img id="videoThumb" src="" alt="Miniatura del video">
+                        <span id="videoDuration" class="duration-badge">00:00</span>
+                    </div>
+                    <div class="video-details">
+                        <div class="channel-info">
+                            <i class="fa-solid fa-circle-check uploader-badge"></i>
+                            <span id="videoUploader">Canal / Autor</span>
+                            <span id="videoPlatform" class="platform-badge">YouTube</span>
+                        </div>
+                        <h3 id="videoTitle">Título del Video...</h3>
+
+                        <!-- Download Options -->
+                        <div class="options-group">
+                            <label for="formatSelect"><i class="fa-solid fa-sliders"></i> Selecciona Calidad o Formato:</label>
+                            <div class="select-wrapper">
+                                <select id="formatSelect">
+                                    <!-- Dynamic options inserted here -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="button" id="btnStartDownload" class="btn-success">
+                                <i class="fa-solid fa-download"></i> Descargar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Download Progress Card (Initially hidden) -->
+            <section id="progressCard" class="card progress-card hidden">
+                <div class="progress-header">
+                    <div class="status-info">
+                        <i id="statusIcon" class="fa-solid fa-arrow-down-long fa-bounce"></i>
+                        <div>
+                            <h4 id="progressStatusTitle">Descargando archivo...</h4>
+                            <p id="progressFileName" class="filename-text">video.mp4</p>
+                        </div>
+                    </div>
+                    <span id="progressPercent" class="percent-badge">0%</span>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <div class="progress-metrics">
+                    <span id="metricDownloaded"><i class="fa-solid fa-hard-drive"></i> 0 MB / 0 MB</span>
+                    <span id="metricSpeed"><i class="fa-solid fa-gauge-high"></i> 0 MB/s</span>
+                    <span id="metricEta"><i class="fa-regular fa-clock"></i> --</span>
+                </div>
+            </section>
+
+            <!-- Recent Downloads List -->
+            <section class="card history-card">
+                <div class="history-header">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Descargas Recientes</h3>
+                    <button type="button" id="btnRefreshHistory" class="btn-small" title="Actualizar lista">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+                <div id="historyList" class="history-list">
+                    <div class="empty-history">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <p>No hay descargas recientes aún. ¡Pega un enlace arriba para comenzar!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

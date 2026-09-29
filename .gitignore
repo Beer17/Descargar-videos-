@@ -1,0 +1,10 @@
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+downloads/
+*.log
+.DS_Store
